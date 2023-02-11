@@ -12,11 +12,6 @@ import (
 const (
 	Output       = "build"
 	MatchPattern = "assets/*/*"
-
-	//ENDPOINT     = "https://oss-cn-hangzhou.aliyuncs.com"
-	//BUCKET       = "frontend-weekly"
-	//AccessKeyId     = "LTAI5tMFnXMeAycS1pSBfsKw"
-	//AccessKeySecret = "cpJQIwUfCtdM61hyIu2r4tsP70pSV5"
 )
 
 var (
