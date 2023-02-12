@@ -8,21 +8,27 @@ import (
 	"path/filepath"
 )
 
-// TODO: 除了 ENDPOINT，秘钥信息通过 GitHub 账号配置
 const (
 	Output       = "build"
 	MatchPattern = "assets/*/*"
+
+	//ENDPOINT     = "https://oss-cn-hangzhou.aliyuncs.com"
+	//BUCKET       = "frontend-weekly"
+	//AccessKeyId     = "LTAI5tMFnXMeAycS1pSBfsKw"
+	//AccessKeySecret = "cpJQIwUfCtdM61hyIu2r4tsP70pSV5"
 )
 
 var (
-	endpoint = flag.String("endpoint", "", "Path to main Go main package.")
-	bucket   = flag.String("bucket", "", "Override action name, the default name is the package name.")
+	endpoint = flag.String("endpoint", "", "填写Bucket对应的Endpoint")
+	bucket   = flag.String("bucket", "", "填写存储空间名称")
 
 	AccessKeyId     = os.Getenv("ACCESS_KEY_ID")
 	AccessKeySecret = os.Getenv("ACCESS_KEY_SECRET")
 )
 
 func main() {
+	flag.Parse()
+
 	// 创建OSSClient实例
 	client, err := oss.New(*endpoint, AccessKeyId, AccessKeySecret)
 	if err != nil {

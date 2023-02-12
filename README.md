@@ -1,5 +1,7 @@
 # aliyun-oss-action
 
+用于 docusaurus 博客上传静态资源到阿里云 OSS。
+
 sdk 下载：
 
 https://github.com/aliyun/aliyun-oss-go-sdk
