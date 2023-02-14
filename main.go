@@ -3,9 +3,13 @@ package main
 import (
 	"flag"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/sourcegraph/conc/pool"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
+	"sync/atomic"
+	"time"
 )
 
 const (
@@ -50,33 +54,44 @@ func main() {
 		log.Fatal(err)
 	}
 
-	totalCount, ignoreCount, uploadCount := len(matches), 0, 0
+	totalCount := len(matches)
+	var ignoreCount, uploadCount int64
+	start := time.Now()
+	log.Println("[info] uploading...")
 
+	p := pool.New().
+		WithMaxGoroutines(runtime.NumCPU())
 	for _, match := range matches {
-		// 计算相对路径作为 objectKey
-		objectKey, err := filepath.Rel(buildPath, match)
-		if err != nil {
-			log.Fatal(err)
-		}
-		isExist, err := bucket.IsObjectExist(objectKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if isExist {
-			ignoreCount++
-			continue
-		}
-		// 上传文件
-		if err = bucket.PutObjectFromFile(objectKey, match); err != nil {
-			log.Fatal(err)
-		}
-		uploadCount++
+		match := match
+		p.Go(func() {
+			// 计算相对路径作为 objectKey
+			objectKey, err := filepath.Rel(buildPath, match)
+			if err != nil {
+				log.Fatal(err)
+			}
+			isExist, err := bucket.IsObjectExist(objectKey)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if isExist {
+				atomic.AddInt64(&ignoreCount, 1)
+				return
+			}
+			// 上传文件
+			if err = bucket.PutObjectFromFile(objectKey, match); err != nil {
+				log.Fatal(err)
+			}
+			atomic.AddInt64(&uploadCount, 1)
+		})
 	}
 
+	p.Wait()
+
 	log.Printf(
-		"[success] Total: %d Uploaded: %d Ignored: %d",
+		"[success] total: %d uploaded: %d ugnored: %d in %.2fs",
 		totalCount,
 		uploadCount,
 		ignoreCount,
+		time.Since(start).Seconds(),
 	)
 }
