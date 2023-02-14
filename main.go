@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/schollz/progressbar/v3"
 	"log"
 	"os"
 	"path/filepath"
@@ -51,16 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bar := progressbar.NewOptions(len(matches),
-		progressbar.OptionEnableColorCodes(true),
-		progressbar.OptionSetDescription("Uploading..."),
-		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "[green]=[reset]",
-			SaucerHead:    "[green]>[reset]",
-			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
-		}))
+	totalCount, ignoreCount, uploadCount := len(matches), 0, 0
 
 	for _, match := range matches {
 		// 计算相对路径作为 objectKey
@@ -73,13 +63,20 @@ func main() {
 			log.Fatal(err)
 		}
 		if isExist {
-			_ = bar.Add(1)
+			ignoreCount++
 			continue
 		}
 		// 上传文件
 		if err = bucket.PutObjectFromFile(objectKey, match); err != nil {
 			log.Fatal(err)
 		}
-		_ = bar.Add(1)
+		uploadCount++
 	}
+
+	log.Printf(
+		"[success] Total: %d Uploaded: %d Ignored: %d",
+		totalCount,
+		uploadCount,
+		ignoreCount,
+	)
 }
