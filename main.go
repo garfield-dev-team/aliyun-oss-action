@@ -30,6 +30,12 @@ var (
 	AccessKeySecret = os.Getenv("ACCESS_KEY_SECRET")
 )
 
+func init() {
+	// 解决 log 时区问题
+	var cstZone = time.FixedZone("CST", 8*3600) // 东八区
+	time.Local = cstZone
+}
+
 func main() {
 	flag.Parse()
 
@@ -59,8 +65,10 @@ func main() {
 	start := time.Now()
 	log.Println("[info] uploading...")
 
+	log.Println("===", runtime.NumCPU())
+
 	p := pool.New().
-		WithMaxGoroutines(runtime.NumCPU())
+		WithMaxGoroutines(runtime.NumCPU() * 2)
 	for _, match := range matches {
 		match := match
 		p.Go(func() {
@@ -88,7 +96,7 @@ func main() {
 	p.Wait()
 
 	log.Printf(
-		"[success] total: %d uploaded: %d ugnored: %d in %.2fs",
+		"[success] total: %d uploaded: %d ignored: %d in %.2fs",
 		totalCount,
 		uploadCount,
 		ignoreCount,
