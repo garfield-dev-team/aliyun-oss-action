@@ -65,11 +65,12 @@ func main() {
 	start := time.Now()
 	log.Println("[info] uploading...")
 
-	log.Println("===", runtime.NumCPU())
-
+	// 经过试验，goroutine 数量为逻辑内核数两倍效率比较高
 	p := pool.New().
 		WithMaxGoroutines(runtime.NumCPU() * 2)
 	for _, match := range matches {
+		// for range 迭代 match 内存地址是同一个，只是值不一样
+		// 因此必须要给每次迭代都 copy 一份，确保并发不会出现竞态条件问题
 		match := match
 		p.Go(func() {
 			// 计算相对路径作为 objectKey
