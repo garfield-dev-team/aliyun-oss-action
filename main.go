@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/sourcegraph/conc/pool"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"sync/atomic"
 	"time"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/sourcegraph/conc/pool"
 )
 
 const (
