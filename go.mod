@@ -1,4 +1,4 @@
-module aliyun-oss-action
+module github.com/garfield-dev-team/aliyun-oss-action
 
 go 1.19
 
