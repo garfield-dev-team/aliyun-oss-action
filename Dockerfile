@@ -1,5 +1,5 @@
 # Specify the version of Go to use
-FROM golang:1.19 AS builder
+FROM golang:1.22 AS builder
 
 ENV GO111MODULE=on CGO_ENABLED=0
 
