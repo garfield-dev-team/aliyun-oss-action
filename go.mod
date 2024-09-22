@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
-	github.com/sourcegraph/conc v0.2.0
+	github.com/sourcegraph/conc v0.3.0
 )
 
 require (
